@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose'
+import { ReservationModule } from './reservation/reservation.module';
 import config from 'config/config';
 
 
@@ -33,6 +34,7 @@ import config from 'config/config';
       inject: [ConfigService],
     }),
     AuthModule,
+    ReservationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
