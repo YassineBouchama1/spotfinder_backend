@@ -23,16 +23,16 @@ export class ReservationController {
 
   @Get(':id')
   async findOne(@Param('id') id: string,@Req() req ) {
-    return await this.reservationService.findOne(+id,req.userId);
+    return await this.reservationService.findOne(id,req.userId);
   }
 
   @Patch(':id')
-  async  update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-    return await this.reservationService.update(+id, updateReservationDto);
+  async  update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto,@Req() req) {
+    return await this.reservationService.update(id, req.userId,updateReservationDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string,@Req() req ) {
-    return await this.reservationService.remove(+id,req.userId);
+    return await this.reservationService.remove(id,req.userId);
   }
 }

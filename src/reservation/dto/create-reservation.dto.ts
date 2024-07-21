@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateReservationDto {
 
@@ -16,6 +16,7 @@ checkInDate: Date;
 checkOutDate: Date;
 
 
-
+@IsOptional()
+status:boolean
 
 }

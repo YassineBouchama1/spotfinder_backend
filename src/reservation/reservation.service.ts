@@ -11,7 +11,7 @@ import {
   Reservation,
   ReservationDocument,
 } from 'src/schemas/reservation.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class ReservationService {
@@ -21,15 +21,28 @@ export class ReservationService {
   ) {}
   async create(createReservationDto: CreateReservationDto, userId: string) {
     try {
-      const newReservation = await this.reservationModel.create({
-        ...createReservationDto,
-        userId,
-      });
-      if (!newReservation) {
-        throw new BadRequestException('Failed to create reservation');
-      }
+      const { HotelId, checkInDate, checkOutDate  } = createReservationDto;
 
-      return { message: 'Reservation created successfully' };
+      // Ensure the dates are properly formatted
+      const formattedCheckInDate = new Date(checkInDate);
+      const formattedCheckOutDate = new Date(checkOutDate);
+
+
+      // check if the check in date is  bigger than the check out date
+      if (checkInDate >= checkOutDate) {
+        throw new BadRequestException(
+          'Check-in date must be before check-out date',
+        );
+      }
+      const newReservation = new this.reservationModel({
+        HotelId,
+        userId,
+        checkInDate: formattedCheckInDate,
+        checkOutDate: formattedCheckOutDate,
+        status:createReservationDto.status || true
+      });
+
+      return await newReservation.save();
     } catch (error) {
       throw new BadRequestException('server Failed ');
     }
@@ -48,27 +61,28 @@ export class ReservationService {
     }
   }
 
-  async findOne(id: number, userId: string) {
-    try {
-      const isExist = await this.reservationModel.findById(id);
-
-      // check if reservation exists or this user he's owen the reservation
-      if (!isExist || isExist?.userId.toString() === userId) {
-        throw new NotFoundException(
-          'Reservation not found or its not yours ',
-        );
-      }
-
-      return isExist;
-    } catch (error) {
-      throw new BadRequestException('server Failed ');
+  async findOne(id: string, userId: string): Promise<Reservation> {
+    // validate input id and userId
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(userId)) {
+      throw new NotFoundException('Invalid reservation or user ID');
     }
 
-  
-  }
+    // find the reservation in database by id and user id
+    const reservation = await this.reservationModel.findById(id);
 
-  async update(id: number, updateReservationDto: UpdateReservationDto) {
-    return `This action updates a #${id} reservation`;
+    if (!reservation) {
+      throw new NotFoundException('Reservation not found');
+    }
+
+    // check if this user owns the reservation or not
+
+    if (reservation.userId.toString() !== userId) {
+      throw new UnauthorizedException(
+        'You are not authorized to access this reservation',
+      );
+    }
+
+    return reservation;
   }
 
   async remove(id: string, userId: string): Promise<void> {
@@ -78,7 +92,6 @@ export class ReservationService {
       if (!reservation) {
         throw new NotFoundException('Reservation not found');
       }
-
 
       // check if this user owns the reservation or not
       if (reservation.userId.toString() != userId) {
@@ -96,5 +109,55 @@ export class ReservationService {
     } catch (error) {
       throw new BadRequestException('server Failed ');
     }
+  }
+
+  // updating
+  async update(
+    id: string,
+    userId: string,
+    updateReservationDto: UpdateReservationDto,
+  ): Promise<Reservation> {
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid reservation or user ID');
+    }
+
+    const reservation = await this.reservationModel.findById(id);
+
+    if (!reservation) {
+      throw new NotFoundException('Reservation not found');
+    }
+
+    if (reservation.userId.toString() !== userId) {
+      throw new UnauthorizedException(
+        'You are not authorized to update this reservation',
+      );
+    }
+
+    // Validate dates if they are being updated
+    if (updateReservationDto.checkInDate && updateReservationDto.checkOutDate) {
+      
+      const checkInDate = new Date(updateReservationDto.checkInDate || reservation.checkInDate );
+      const checkOutDate = new Date(updateReservationDto.checkOutDate || reservation.checkOutDate );
+
+      if (checkInDate >= checkOutDate) {
+        throw new BadRequestException(
+          'Check-in date must be before check-out date',
+        );
+      }
+    }
+
+    reservation.status = updateReservationDto.status || reservation.status
+
+
+    // Update the reservation
+    Object.assign(reservation, updateReservationDto);
+
+    const updatedReservation = await reservation.save();
+
+    if (!updatedReservation) {
+      throw new BadRequestException('Failed to update reservation');
+    }
+
+    return updatedReservation;
   }
 }

@@ -22,6 +22,8 @@ export class Reservation {
     @Prop({ required: true })
     checkOutDate: Date;
 
+    @Prop({defaultValue:true , required: true})
+    status: boolean;
 }
 
 export const ReservationSchema = SchemaFactory.createForClass(Reservation)
