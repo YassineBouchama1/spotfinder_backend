@@ -134,8 +134,6 @@ export class ReservationService {
     }
 
     // Validate dates if they are being updated
-    if (updateReservationDto.checkInDate && updateReservationDto.checkOutDate) {
-      
       const checkInDate = new Date(updateReservationDto.checkInDate || reservation.checkInDate );
       const checkOutDate = new Date(updateReservationDto.checkOutDate || reservation.checkOutDate );
 
@@ -144,7 +142,7 @@ export class ReservationService {
           'Check-in date must be before check-out date',
         );
       }
-    }
+  
 
     reservation.status = updateReservationDto.status || reservation.status
 
