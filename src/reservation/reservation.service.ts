@@ -42,12 +42,14 @@ export class ReservationService {
         status:createReservationDto.status || true
       });
 
-      return await newReservation.save();
+       await newReservation.save();
+
+      return  'Reservation Created successfully';
     } catch (error) {
       throw new BadRequestException('server Failed ');
     }
   }
-
+    
   async findAll(userId: string) {
     try {
       // bring all reservation belong to userid

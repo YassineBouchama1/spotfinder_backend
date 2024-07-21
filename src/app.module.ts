@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose'
 import { ReservationModule } from './reservation/reservation.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 import config from 'config/config';
 
 
@@ -35,6 +36,7 @@ import config from 'config/config';
     }),
     AuthModule,
     ReservationModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
