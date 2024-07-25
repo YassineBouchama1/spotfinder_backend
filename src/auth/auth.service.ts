@@ -26,7 +26,7 @@ export class AuthService {
   ) {}
 
   async signup(signupData: SignupDto) {
-    const { email, password, name, role, category } = signupData;
+    const { email, password, name, role, category  } = signupData;
 
     // check if email is existing
     const emailIsExisting = await this.userModel.findOne({ email });
@@ -56,6 +56,7 @@ export class AuthService {
     };
   }
   async login(loginData: LoginDto) {
+    
     const { email, password } = loginData;
 
     // check if user exists
@@ -65,12 +66,14 @@ export class AuthService {
       throw new UnauthorizedException('Wrong Credentials');
     }
 
+
     // compare password with existing password
     const isPasswordMatching = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatching) {
       throw new UnauthorizedException('Wrong Credentials');
     }
+
 
     // Generate JWT tokens
     const tokens = await this.generateUserTokens(user);
@@ -104,9 +107,9 @@ export class AuthService {
   }
 
   async generateUserTokens(user: UserDocument) {
-    console.log(user);
+
     // create payload
-    const payload = { userId: user.id };
+    const payload = { id: user._id,role:user.role };
 
     // generate new access token
     const access_token = await this.jwtService.signAsync(payload);

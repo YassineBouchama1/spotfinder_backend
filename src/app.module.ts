@@ -7,7 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose'
 import { ReservationModule } from './reservation/reservation.module';
 import { WishlistModule } from './wishlist/wishlist.module';
-import config from 'config/config';
+import config, { jwtConstants } from 'config/config';
+import { HostelModule } from './hostel/hostel.module';
 
 
 @Module({
@@ -17,6 +18,11 @@ import config from 'config/config';
       cache: true,
       load: [config],
     }),
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      // signOptions: { expiresIn: '7d' },
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -25,18 +31,11 @@ import config from 'config/config';
       }),
       inject: [ConfigService],
     }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('jwt.secret'),
-        // signOptions: { expiresIn: '7d' },
-      }),
-      global: true,
-      inject: [ConfigService],
-    }),
+
     AuthModule,
     ReservationModule,
     WishlistModule,
+    HostelModule,
   ],
   controllers: [AppController],
   providers: [AppService],

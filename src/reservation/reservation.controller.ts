@@ -22,7 +22,7 @@ export class ReservationController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string,@Req() req ) {
+  async findOne(@Param('id') id: string, @Req() req ) {
     return await this.reservationService.findOne(id,req.userId);
   }
 

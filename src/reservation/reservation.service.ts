@@ -21,12 +21,12 @@ export class ReservationService {
   ) {}
   async create(createReservationDto: CreateReservationDto, userId: string) {
     try {
-      const { HotelId, checkInDate, checkOutDate  } = createReservationDto;
+      const { HotelId, checkInDate = "2023-09-21T14:30:00Z", checkOutDate = "2023-09-25T14:30:00Z"  } = createReservationDto;
 
       // Ensure the dates are properly formatted
       const formattedCheckInDate = new Date(checkInDate);
       const formattedCheckOutDate = new Date(checkOutDate);
-
+ 
 
       // check if the check in date is  bigger than the check out date
       if (checkInDate >= checkOutDate) {
@@ -44,7 +44,7 @@ export class ReservationService {
 
        await newReservation.save();
 
-      return  'Reservation Created successfully';
+      return  {message :'Reservation Created successfully'};
     } catch (error) {
       throw new BadRequestException('server Failed ');
     }

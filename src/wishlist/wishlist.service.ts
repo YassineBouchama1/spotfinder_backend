@@ -44,6 +44,26 @@ export class WishlistService {
     }
   }
 
+
+  async findOne(id: string, userId: string) {
+  
+      const wishList = await this.wishListModal.findOne({hotelId:id});
+
+      if (!wishList) {
+        throw new BadRequestException('WishList not found');
+      }
+
+      if (wishList.userId.toString() != userId) {
+        throw new UnauthorizedException('Unauthorized to delete this wishList');
+      }
+
+     return wishList
+
+  
+  }
+
+
+
   async remove(id: string, userId: string) {
     try {
       const wishList = await this.wishListModal.findById(id);

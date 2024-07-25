@@ -10,7 +10,7 @@ export class User {
   name: string;
 
   @Prop({enum: BusinessTypes, default: BusinessTypes.COFFEE})
-  category: string;
+  category: string | null;
 
   @Prop({ required: true, unique: true })
   email: string;  // Changed from number to string

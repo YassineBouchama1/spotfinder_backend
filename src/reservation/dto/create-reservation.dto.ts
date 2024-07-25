@@ -8,11 +8,11 @@ HotelId: string;
 
 
 
-@IsNotEmpty()
+@IsOptional()
 checkInDate: Date;
 
 
-@IsNotEmpty()
+@IsOptional()
 checkOutDate: Date;
 
 

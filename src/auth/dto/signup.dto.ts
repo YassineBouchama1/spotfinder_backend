@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
 import { BusinessTypes, RoleTypes } from "src/types/user.enum";
 
 export class SignupDto {
@@ -17,9 +17,9 @@ export class SignupDto {
     @MinLength(6)
     readonly password: string
 
-    @IsNotEmpty()
-    @IsEnum(BusinessTypes)
-    category: string;
+    @IsOptional()
+    @IsEnum(BusinessTypes || null)
+    category: string | null;
 
 
     @IsNotEmpty()
