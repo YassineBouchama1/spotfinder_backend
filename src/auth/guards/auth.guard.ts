@@ -15,9 +15,9 @@ export class AuthGuard implements CanActivate {
     private jwtService: JwtService,
   ) {}
 
-  canActivate(
+ async canActivate(
     context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  ):  Promise<boolean>  {
     // bring request
     const request = context.switchToHttp().getRequest();
     // get token from request
@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
     
     try {
       // decode token
-      const payload = this.jwtService.verify(token);
+      const payload = await this.jwtService.verifyAsync(token);
       request.userId = payload.id;
       request.role = payload.role;
 
@@ -48,6 +48,8 @@ export class AuthGuard implements CanActivate {
 
   // func for split token from bearer
   private extractTokenFromHeader(request: Request): string | undefined {
-    return request.headers.authorization?.split(' ')[1];
+    const authHeader = request.headers.authorization;
+    return authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : undefined;
   }
+  
 }

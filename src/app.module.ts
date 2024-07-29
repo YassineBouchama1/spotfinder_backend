@@ -18,11 +18,16 @@ import { HostelModule } from './hostel/hostel.module';
       cache: true,
       load: [config],
     }),
-    JwtModule.register({
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (config) => ({
+        secret: config.get('jwt.secret'),
+        // signOptions: { expiresIn: '7d' },
+      }),
       global: true,
-      secret: jwtConstants.secret,
-      // signOptions: { expiresIn: '7d' },
+      inject: [ConfigService],
     }),
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
