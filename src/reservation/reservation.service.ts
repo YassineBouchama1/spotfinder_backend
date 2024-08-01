@@ -64,6 +64,7 @@ export class ReservationService {
       if (hasMissingHotels) {
         throw new BadRequestException('Some reservations are missing hotel information');
       }
+      return reservations
  
   }
 
