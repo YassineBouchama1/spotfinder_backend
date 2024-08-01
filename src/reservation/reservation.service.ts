@@ -51,16 +51,20 @@ export class ReservationService {
   }
     
   async findAll(userId: string) {
-    try {
+
       // Fetch all reservations belonging to the userId and populate the Hostel field
       const reservations = await this.reservationModel.find({ userId }).populate('HotelId');
-      if (!reservations || reservations.length === 0) {
-        throw new BadRequestException('No reservations found');
+
+      if (!reservations || reservations?.length === 0) {
+       return []
       }
-      return reservations;
-    } catch (error) {
-      throw new BadRequestException('server Failed ');
-    }
+
+      // Check for missing hotels
+      const hasMissingHotels = reservations.some(r => !r.HotelId);
+      if (hasMissingHotels) {
+        throw new BadRequestException('Some reservations are missing hotel information');
+      }
+ 
   }
 
   async findOne(id: string, userId: string): Promise<Reservation> {
