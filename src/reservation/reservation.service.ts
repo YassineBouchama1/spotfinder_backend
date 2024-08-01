@@ -92,29 +92,19 @@ export class ReservationService {
     return reservation;
   }
 
-  async remove(id: string, userId: string): Promise<void> {
+  async remove(id: string, userId: string) {
     try {
-      const reservation = await this.reservationModel.findById(id);
+      const reservation = await this.reservationModel
+      .findOneAndDelete({ _id: id, userId })
+      .exec();
+    if (!reservation) {
+      throw new NotFoundException(`reservation with ID ${id} not found`);
+    }
 
-      if (!reservation) {
-        throw new NotFoundException('Reservation not found');
-      }
+    return  {message :'Reservation Removed successfully'};
 
-      // check if this user owns the reservation or not
-      if (reservation.userId.toString() != userId) {
-        throw new UnauthorizedException(
-          'You are not authorized to remove this reservation',
-        );
-      }
-
-      const result = await this.reservationModel.deleteOne({ _id: id });
-
-      // if return value is 0 then return error message
-      if (result.deletedCount === 0) {
-        throw new NotFoundException('Reservation not found');
-      }
     } catch (error) {
-      throw new BadRequestException('server Failed ');
+      throw new BadRequestException('server Failed Or Invalid Id ');
     }
   }
 
