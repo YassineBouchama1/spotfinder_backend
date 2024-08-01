@@ -52,9 +52,9 @@ export class ReservationService {
     
   async findAll(userId: string) {
     try {
-      // bring all reservation belong to userid
-      const reservations = await this.reservationModel.find({ userId }).populate('Hostel');
-      if (!reservations) {
+      // Fetch all reservations belonging to the userId and populate the Hostel field
+      const reservations = await this.reservationModel.find({ userId }).populate('HotelId');
+      if (!reservations || reservations.length === 0) {
         throw new BadRequestException('No reservations found');
       }
       return reservations;
