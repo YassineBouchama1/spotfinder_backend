@@ -10,8 +10,8 @@ export type ReservationDocument = HydratedDocument<Reservation>
 @Schema()
 export class Reservation {
 
-    @Prop({ required: true })
-    HotelId: string;
+    @Prop({type:MongooseSchema.Types.ObjectId, ref:"Hostel", required: true })
+    HotelId: MongooseSchema.Types.ObjectId;
   
     @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true})
     userId: MongooseSchema.Types.ObjectId;
